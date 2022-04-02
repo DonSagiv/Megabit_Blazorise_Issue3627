@@ -1,0 +1,109 @@
+﻿@page "/"
+@using Megabit_Blazorise_Issue3627.Models
+
+<div>
+    @foreach (var eventItem in _events)
+    {
+        <CardDeck>
+            <Card Style="background-color:lightgray" Margin="Margin.Is3.FromBottom">
+
+                <Div Margin="Margin.Is3">
+
+                    <Autocomplete TItem="Person"
+                              TValue="string"
+                              Data="@_people"
+                              TextField="@((item) => item.FirstName)"
+                              ValueField="@((item) => item.FirstName)"
+                              Placeholder="Select Person"
+                              SelectedValue="@eventItem.PersonItem.FirstName"
+                              SelectedValueChanged="(x => OnPersonChanged(x, eventItem))"
+                              FreeTyping
+                              Filter="AutocompleteFilter.Contains">
+                        <NotFoundContent> Not found </NotFoundContent>
+                    </Autocomplete>
+
+                    <Blazorise.Button>
+                        <Icon Name="IconName.Delete" Margin="Margin.Is1.OnX" TextColor="TextColor.Primary" />
+                    </Blazorise.Button>
+
+                </Div>
+
+            </Card>
+        </CardDeck>
+    }
+</div>
+
+@code
+{
+    private List<Person?> _people;
+    private List<Event?> _events;
+
+    public Index()
+    {
+        _people = new List<Person?>();
+        _events = new List<Event?>();
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        _people = new List<Person>();
+
+        var peterGriffin = new Person()
+            {
+                FirstName = "Peter",
+                LastName = "Griffin",
+                Address = "Quahog, RI, USA"
+            };
+
+        var homerSimpson = new Person()
+            {
+                FirstName = "Homer",
+                LastName = "Simpson",
+                Address = "SpringField, USA"
+            };
+
+        var rickSanchez = new Person()
+            {
+                FirstName = "Rick",
+                LastName = "Sanchez",
+                Address = "Planet Earth"
+            };
+
+        var hankHill = new Person()
+            {
+                FirstName = "Hank",
+                LastName = "Hill",
+                Address = "Arlen, TX, USA"
+            };
+
+        _people.Add(peterGriffin);
+        _people.Add(homerSimpson);
+        _people.Add(rickSanchez);
+        _people.Add(hankHill);
+
+        _events = new List<Event>
+        {
+            new Event { PersonItem = homerSimpson },
+            new Event { PersonItem = rickSanchez },
+            new Event { PersonItem = hankHill }
+        };
+
+        return base.OnInitializedAsync();
+    }
+
+    public void OnPersonChanged(string FirstName, Event eventInfo)
+    {
+        if (eventInfo == null)
+        {
+            return;
+        }
+
+        if (FirstName == null)
+        {
+            return;
+        }
+
+        eventInfo.PersonItem = _people
+            .FirstOrDefault(x => x.FirstName == FirstName);
+    }
+}
